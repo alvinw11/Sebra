@@ -1,0 +1,8 @@
+streamlit
+spacy
+pandas
+numpy
+pillow
+pytesseract
+pdf2image
+scikit-learn 
