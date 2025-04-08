@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sebra</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- NAVIGATION BAR -->
+  <header class="navbar">
+    <a href="landingpage.html" class="logo-link">
+      <div class="logo-container">
+        <img src="Logo.png" alt="Logo" />
+        <span class="logo-text">Sebra</span>
+      </div>
+    </a>
+    <ul class="menu">
+      <li><a href="API.html">API</a></li>
+      <li><a href="Trials.html">Trials</a></li>
+      <li><a href="Patients.html">Patients</a></li>
+      <li><a href="Providers.html">Providers</a></li>
+      <li><a href="CROs.html">CROs</a></li>
+      <li><a href="FAQs.html">FAQs</a></li>
+    </ul>
+    <a class="login-link" href="login.html">Sign Up / Log In</a>
+  </header>
+  
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="main-content">
+      <h1 class="title">Find Your Perfect Clinical Trial Match</h1>
+      <p class="subtext">Support the research of rare diseases and more. Sebra matches you with trials that are right for you. At no cost to you or your insurance.</p>
+      <a href="Trials.html" class="cta-button">Join a Clinical Trial</a>
+    </div>
+  </section>
+
+  <!-- Info Statement Section -->
+  <section class="mission-section">
+    <div class="mission-statement">
+      <h1>We find the study that is right for you.</h1>
+      <p>ClinicSelect connects you to clinical trials by taking in information about who you are and what you’re looking for, then matching it up against availible trials to find the best fit.</p>
+    </div>
+  </section>
+
+  <!-- Process Section -->
+  <section class="process-section">
+    <div class="process-grid">
+      <!-- Step 1 -->
+      <div class="process-step">
+        <div class="process-icon">
+          <img src="step1.png" alt="Person waving" />
+        </div>
+        <h3 class="process-title">It starts with you</h3>
+        <p class="process-description">First, you'll answer a few questions to help us understand who you are and which research studies are best suited for you.</p>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="process-step">
+        <div class="process-icon">
+          <img src="step2.png" alt="Checklist with heart" />
+        </div>
+        <h3 class="process-title">ClinicSelect finds your match</h3>
+        <p class="process-description">Based on your medical history, location, and what you're looking for in a clinical trial, we will work to find the right study for you.</p>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="process-step">
+        <div class="process-icon">
+          <img src="step3.png" alt="Doctor with tablet" />
+        </div>
+        <h3 class="process-title">Make an informed decision</h3>
+        <p class="process-description">Speak directly with the research staff before you decide whether or not to participate in the trial to make an informed decision.</p>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="process-step">
+        <div class="process-icon">
+          <img src="step4.png" alt="Hands holding heart" />
+        </div>
+        <h3 class="process-title">Receive medical attention</h3>
+        <p class="process-description">If you choose to participate, you will receive clinical attention and care at no cost to you or your insurance throughout the study.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission Statement Section -->
+  <section class="info-section">
+    <div class="info-content">
+      <h2 class="info-title">ClinicSelect is committed to rare disease funding & research.</h2>
+      <p class="info-description">ClinicSelect connects you to clinical trials by taking in information about who you are and what you're looking for, then matching it up against available trials to find the best fit.</p>
+      <a href="#learn-more" class="learn-more-button">Learn More</a>
+    </div>
+  </section>
+  
+  <script>
+    const ctaButton = document.querySelector('.cta-button');
+    // Set default login status if not already set
+    if (localStorage.getItem('isLoggedIn') === null) {
+      localStorage.setItem('isLoggedIn', 'false');
+    }
+    ctaButton.addEventListener('click', () => {
+      if (localStorage.getItem('isLoggedIn') === 'true') {
+        window.location.href = "Patients.html";
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sebra</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  
+  <!-- NAVIGATION BAR -->
+  <header class="navbar">
+    <a href="landingpage.html" class="logo-link">
+      <div class="logo-container">
+        <img src="Logo.png" alt="Logo" />
+        <span class="logo-text">Sebra</span>
+      </div>
+    </a>
+    <ul class="menu">
+      <li><a href="API.html">API</a></li>
+      <li><a href="Trials.html">Trials</a></li>
+      <li><a href="Patients.html">Patients</a></li>
+      <li><a href="Providers.html">Providers</a></li>
+      <li><a href="CROs.html">CROs</a></li>
+      <li><a href="FAQs.html">FAQs</a></li>
+    </ul>
+    <a class="login-link" href="login.html">Sign Up / Log In</a>
+  </header>
+  
+  <!-- MAIN CONTENT: Patient EHR Form -->
+  <main>
+    <div class="ehr-container">
+      <h2>Patient Electronic Health Record</h2>
+      <form id="ehrForm">
+        <!-- Section Buttons Container -->
+        <div class="section-buttons-container">
+          <button type="button" class="section-button" onclick="toggleSection('personalInfo')">Personal Information</button>
+          <button type="button" class="section-button" onclick="toggleSection('emergencyContact')">Emergency Contact</button>
+          <button type="button" class="section-button" onclick="toggleSection('vitalSigns')">Vital Signs</button>
+          <button type="button" class="section-button" onclick="toggleSection('immunizations')">Immunizations</button>
+          <button type="button" class="section-button" onclick="toggleSection('labResults')">Lab Results</button>
+          <button type="button" class="section-button" onclick="toggleSection('treatmentPlan')">Treatment Plan</button>
+          <button type="button" class="section-button" onclick="toggleSection('medicalInfo')">Medical Information</button>
+        </div>
+
+        <!-- Personal Information -->
+        <div id="personalInfo" class="section-content">
+          <fieldset>
+            <legend>Personal Information</legend>
+            <div class="form-group">
+              <label for="firstName">First Name:</label>
+              <input type="text" id="firstName" name="firstName" required>
+            </div>
+            <div class="form-group">
+              <label for="lastName">Last Name:</label>
+              <input type="text" id="lastName" name="lastName" required>
+            </div>
+            <div class="form-group">
+              <label for="dob">Date of Birth:</label>
+              <input type="date" id="dob" name="dob" required>
+            </div>
+            <div class="form-group">
+              <label for="gender">Gender:</label>
+              <select id="gender" name="gender" required>
+                <option value="">Select...</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number:</label>
+              <input type="tel" id="phone" name="phone" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address:</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="address">Home Address:</label>
+              <input type="text" id="address" name="address" required>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Emergency Contact -->
+        <div id="emergencyContact" class="section-content">
+          <fieldset>
+            <legend>Emergency Contact</legend>
+            <div class="form-group">
+              <label for="emergencyName">Contact Name:</label>
+              <input type="text" id="emergencyName" name="emergencyName" required>
+            </div>
+            <div class="form-group">
+              <label for="emergencyPhone">Contact Phone:</label>
+              <input type="tel" id="emergencyPhone" name="emergencyPhone" required>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Vital Signs -->
+        <div id="vitalSigns" class="section-content">
+          <fieldset>
+            <legend>Vital Signs</legend>
+            <div class="vital-signs-grid">
+              <div class="form-group">
+                <label for="bloodPressure">Blood Pressure (mmHg):</label>
+                <input type="text" id="bloodPressure" name="bloodPressure" placeholder="120/80">
+              </div>
+              <div class="form-group">
+                <label for="heartRate">Heart Rate (bpm):</label>
+                <input type="number" id="heartRate" name="heartRate">
+              </div>
+              <div class="form-group">
+                <label for="temperature">Temperature (°F):</label>
+                <input type="number" id="temperature" name="temperature" step="0.1">
+              </div>
+              <div class="form-group">
+                <label for="respiratoryRate">Respiratory Rate:</label>
+                <input type="number" id="respiratoryRate" name="respiratoryRate">
+              </div>
+              <div class="form-group">
+                <label for="height">Height (cm):</label>
+                <input type="number" id="height" name="height">
+              </div>
+              <div class="form-group">
+                <label for="weight">Weight (kg):</label>
+                <input type="number" id="weight" name="weight">
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Immunizations -->
+        <div id="immunizations" class="section-content">
+          <fieldset>
+            <legend>Immunization History</legend>
+            <div class="form-group">
+              <label for="immunizationHistory">Recent Immunizations:</label>
+              <textarea id="immunizationHistory" name="immunizationHistory" placeholder="List immunizations with dates"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="nextScheduled">Next Scheduled Immunizations:</label>
+              <textarea id="nextScheduled" name="nextScheduled"></textarea>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Lab Results -->
+        <div id="labResults" class="section-content">
+          <fieldset>
+            <legend>Laboratory Results</legend>
+            <div class="form-group">
+              <label for="recentLabs">Recent Lab Results:</label>
+              <textarea id="recentLabs" name="recentLabs" placeholder="Enter lab results with dates"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="pendingLabs">Pending Labs:</label>
+              <textarea id="pendingLabs" name="pendingLabs"></textarea>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Treatment Plans -->
+        <div id="treatmentPlan" class="section-content">
+          <fieldset>
+            <legend>Treatment Plan</legend>
+            <div class="form-group">
+              <label for="currentTreatment">Current Treatment Plan:</label>
+              <textarea id="currentTreatment" name="currentTreatment"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="followUp">Follow-up Appointments:</label>
+              <textarea id="followUp" name="followUp"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="treatmentNotes">Treatment Notes:</label>
+              <textarea id="treatmentNotes" name="treatmentNotes"></textarea>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Medical Information -->
+        <div id="medicalInfo" class="section-content">
+          <fieldset>
+            <legend>Medical Information</legend>
+            <div class="form-group">
+              <label for="primaryPhysician">Primary Physician:</label>
+              <input type="text" id="primaryPhysician" name="primaryPhysician">
+            </div>
+            <div class="form-group">
+              <label for="insurance">Insurance Provider:</label>
+              <input type="text" id="insurance" name="insurance">
+            </div>
+            <div class="form-group">
+              <label for="medications">Current Medications:</label>
+              <textarea id="medications" name="medications"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="allergies">Allergies:</label>
+              <textarea id="allergies" name="allergies"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="medicalHistory">Medical History:</label>
+              <textarea id="medicalHistory" name="medicalHistory"></textarea>
+            </div>
+          </fieldset>
+        </div>
+
+        <button type="submit" class="submit-button">Submit Record</button>
+      </form>
+    </div>
+  </main>
+  
+  <script>
+    function toggleSection(sectionId) {
+      const allSections = document.querySelectorAll('.section-content');
+      const allButtons = document.querySelectorAll('.section-button');
+      const section = document.getElementById(sectionId);
+      const button = document.querySelector(`[onclick="toggleSection('${sectionId}')"]`);
+      
+      // If clicking the currently active section, do nothing
+      if (section.classList.contains('active')) {
+        return;
+      }
+
+      // Close all sections and deactivate all buttons
+      allSections.forEach(s => s.classList.remove('active'));
+      allButtons.forEach(b => b.classList.remove('active'));
+      
+      // Open the clicked section and activate its button
+      section.classList.add('active');
+      button.classList.add('active');
+    }
+
+    document.getElementById('ehrForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      alert("Patient record submitted successfully!");
+    });
+
+    // Show Personal Information section by default
+    document.getElementById('personalInfo').classList.add('active');
+    document.querySelector('[onclick="toggleSection(\'personalInfo\')"]').classList.add('active');
+  </script>
+</body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sebra</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAtQhtw4zDJlVQfifApLnplM6urk7juBeQ&libraries=places,geometry"></script>
+</head>
+<body>
+  <!-- NAVIGATION BAR -->
+  <header class="navbar">
+    <a href="landingpage.html" class="logo-link">
+      <div class="logo-container">
+        <img src="Logo.png" alt="Logo" />
+        <span class="logo-text">Sebra</span>
+      </div>
+    </a>
+    <ul class="menu">
+      <li><a href="API.html">API</a></li>
+      <li><a href="trials.html">Trials</a></li>
+      <li><a href="Patients.html">Patients</a></li>
+      <li><a href="Providers.html">Providers</a></li>
+      <li><a href="CROs.html">CROs</a></li>
+      <li><a href="FAQs.html">FAQs</a></li>
+    </ul>
+    <a class="login-link" href="login.html">Sign Up / Log In</a>
+  </header>
+
+  <div class="main-container">
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+    
+    <div class="trials-container">
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Search for trials...">
+        <div class="filter-container">
+          <button class="filter-button active">All</button>
+          <button class="filter-button">Near Me</button>
+          <button class="filter-button">Best Match</button>
+        </div>
+      </div>
+      
+      <div id="trials-list">
+        <!-- Trial cards will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let map;
+    let userMarker;
+    let watchId;
+    let accuracyCircle;
+    let pulsatingCircles = [];
+    let lastKnownPosition = null;
+
+    // Initialize the map
+    function initMap() {
+      try {
+        const futuristicStyle = [
+          {
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#242f3e"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#746855"
+              }
+            ]
+          },
+          {
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#242f3e"
+              }
+            ]
+          },
+          {
+            "featureType": "administrative.locality",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#d59563"
+              }
+            ]
+          },
+          {
+            "featureType": "poi",
+            "elementType": "labels",
+            "stylers": [
+              {
+                "visibility": "off"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#38414e"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#212a37"
+              }
+            ]
+          },
+          {
+            "featureType": "road",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#9ca5b3"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#4DB6AC"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "geometry.stroke",
+            "stylers": [
+              {
+                "color": "#1f2835"
+              }
+            ]
+          },
+          {
+            "featureType": "road.highway",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#f3d19c"
+              }
+            ]
+          },
+          {
+            "featureType": "transit",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#2f3948"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "geometry",
+            "stylers": [
+              {
+                "color": "#17263c"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "labels.text.fill",
+            "stylers": [
+              {
+                "color": "#515c6d"
+              }
+            ]
+          },
+          {
+            "featureType": "water",
+            "elementType": "labels.text.stroke",
+            "stylers": [
+              {
+                "color": "#17263c"
+              }
+            ]
+          }
+        ];
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: { lat: 37.7749, lng: -122.4194 }, // Default to San Francisco
+          zoom: 12,
+          styles: futuristicStyle,
+          mapId: 'futuristic_map',
+          tilt: 45,
+          heading: 0,
+          zoomControl: true,
+          mapTypeControl: false,
+          scaleControl: true,
+          streetViewControl: false,
+          rotateControl: false,
+          fullscreenControl: false,
+          zoomControlOptions: {
+            position: google.maps.ControlPosition.RIGHT_BOTTOM
+          }
+        });
+
+        console.log('Map initialized successfully');
+
+        // Initialize user marker
+        userMarker = new google.maps.Marker({
+          map: map,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 10,
+            fillColor: "#4DB6AC",
+            fillOpacity: 1,
+            strokeColor: "#fff",
+            strokeWeight: 2
+          },
+          title: "Your Location"
+        });
+
+        // Initialize accuracy circle
+        accuracyCircle = new google.maps.Circle({
+          map: map,
+          fillColor: "#4DB6AC",
+          fillOpacity: 0.1,
+          strokeColor: "#4DB6AC",
+          strokeOpacity: 0.3,
+          strokeWeight: 2
+        });
+
+        // Start with a single location request before watching
+        getInitialLocation();
+      } catch (error) {
+        console.error('Error initializing map:', error);
+      }
+    }
+
+    // Get initial location with a longer timeout
+    function getInitialLocation() {
+      if (!navigator.geolocation) {
+        handleLocationError("Geolocation is not supported by this browser.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log('Initial position obtained:', position);
+          handleLocationUpdate(position);
+          // Only start watching after we have an initial position
+          startLocationTracking();
+        },
+        (error) => {
+          console.error("Error getting initial location:", error);
+          handleLocationError(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000, // 10 second timeout for initial position
+          maximumAge: 0
+        }
+      );
+    }
+
+    // Function to start tracking user location
+    function startLocationTracking() {
+      // Create pulsating circles only once
+      if (pulsatingCircles.length === 0) {
+        createPulsatingCircles();
+      }
+
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 2000 // Allow positions up to 2 seconds old
+      };
+
+      watchId = navigator.geolocation.watchPosition(
+        handleLocationUpdate,
+        (error) => {
+          console.error("Error watching location:", error);
+          // If we have a last known position, keep using it
+          if (lastKnownPosition) {
+            updateNearbyTrials(lastKnownPosition);
+          } else {
+            handleLocationError(error);
+          }
+        },
+        options
+      );
+    }
+
+    // Handle location updates
+    function handleLocationUpdate(position) {
+      const pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+
+      // Store last known good position
+      lastKnownPosition = pos;
+
+      // Update marker and circles
+      userMarker.setPosition(pos);
+      accuracyCircle.setCenter(pos);
+      accuracyCircle.setRadius(position.coords.accuracy);
+      
+      pulsatingCircles.forEach(circle => circle.setCenter(pos));
+
+      // Center map only on first fix
+      if (!map.get('initialized')) {
+        map.setCenter(pos);
+        map.set('initialized', true);
+      }
+
+      // Update nearby trials
+      updateNearbyTrials(pos);
+    }
+
+    // Create pulsating circles with optimized animation
+    function createPulsatingCircles() {
+      const numCircles = 3;
+      
+      for (let i = 0; i < numCircles; i++) {
+        const circle = new google.maps.Circle({
+          map: map,
+          fillColor: "#4DB6AC",
+          fillOpacity: 0.3,
+          strokeColor: "#4DB6AC",
+          strokeOpacity: 0.5,
+          strokeWeight: 2,
+          radius: 100,
+          center: map.getCenter()
+        });
+        
+        pulsatingCircles.push(circle);
+        
+        // Use requestAnimationFrame for smoother animation
+        let progress = (i * 100) / numCircles;
+        animateCircle(circle, progress);
+      }
+    }
+
+    // Optimize circle animation using requestAnimationFrame
+    function animateCircle(circle, progress) {
+      function animate() {
+        progress = (progress + 0.5) % 100;
+        
+        const radius = 100 + (progress * 2);
+        const opacity = Math.max(0, 0.3 - (progress * 0.003));
+        
+        circle.setRadius(radius);
+        circle.setOptions({
+          fillOpacity: opacity,
+          strokeOpacity: opacity
+        });
+        
+        requestAnimationFrame(animate);
+      }
+      
+      requestAnimationFrame(animate);
+    }
+
+    // Function to handle location errors
+    function handleLocationError(error) {
+      let errorMessage;
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else {
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Location access was denied by the user.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Location information is unavailable.";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "The request to get location timed out.";
+            break;
+          default:
+            errorMessage = "An unknown error occurred.";
+            break;
+        }
+      }
+      
+      // Display error message to user
+      const trialsList = document.getElementById('trials-list');
+      trialsList.innerHTML = `
+        <div style="padding: 20px; text-align: center; color: red;">
+          ${errorMessage}<br>
+          Please enable location services to find nearby trials.
+        </div>
+      `;
+    }
+
+    // Function to update nearby trials based on current position
+    function updateNearbyTrials(position) {
+      // Sample trial locations (in real app, these would come from a database)
+      const trialLocations = [
+        {
+          title: "Type 2 Diabetes Treatment Study",
+          location: "UCSF Medical Center",
+          position: { lat: position.lat + 0.01, lng: position.lng + 0.01 },
+          match: "95%",
+          description: "Investigating new oral medication for type 2 diabetes management."
+        },
+        {
+          title: "Rheumatoid Arthritis Clinical Trial",
+          location: "Stanford Medical Center",
+          position: { lat: position.lat - 0.01, lng: position.lng - 0.01 },
+          match: "88%",
+          description: "Testing novel biological therapy for RA patients."
+        },
+        {
+          title: "Asthma Treatment Research",
+          location: "Kaiser Permanente",
+          position: { lat: position.lat + 0.02, lng: position.lng - 0.02 },
+          match: "82%",
+          description: "Evaluating new inhaler medication for severe asthma."
+        }
+      ];
+
+      // Clear existing markers (if any)
+      if (window.trialMarkers) {
+        window.trialMarkers.forEach(marker => marker.setMap(null));
+      }
+      window.trialMarkers = [];
+
+      // Add markers for each trial location
+      trialLocations.forEach(trial => {
+        const marker = new google.maps.Marker({
+          position: trial.position,
+          map: map,
+          title: trial.title,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: "#4DB6AC",
+            fillOpacity: 0.8,
+            strokeColor: "#ffffff",
+            strokeWeight: 2
+          }
+        });
+
+        // Updated info window style
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div style="padding: 10px; background-color: #242f3e; color: white; border-radius: 8px;">
+              <h3 style="margin: 0 0 5px 0; color: #4DB6AC;">${trial.title}</h3>
+              <p style="margin: 0; color: #9ca5b3;">${trial.location}</p>
+              <p style="margin: 5px 0 0 0; color: #4DB6AC;">${trial.match} Match</p>
+            </div>
+          `,
+          pixelOffset: new google.maps.Size(0, -5),
+          backgroundColor: "#242f3e",
+          borderRadius: 8
+        });
+
+        marker.addListener('click', () => {
+          infoWindow.open(map, marker);
+        });
+
+        window.trialMarkers.push(marker);
+      });
+
+      // Update trial list with distances
+      updateTrialsList(position, trialLocations);
+    }
+
+    // Function to update trials list with calculated distances
+    function updateTrialsList(userPosition, trials) {
+      const trialsList = document.getElementById('trials-list');
+      trialsList.innerHTML = '';
+
+      trials.forEach(trial => {
+        const distance = google.maps.geometry.spherical.computeDistanceBetween(
+          new google.maps.LatLng(userPosition),
+          new google.maps.LatLng(trial.position)
+        );
+
+        const distanceInMiles = (distance * 0.000621371).toFixed(1);
+
+        const trialCard = `
+          <div class="trial-card">
+            <span class="match-percentage">${trial.match} Match</span>
+            <div class="trial-title">${trial.title}</div>
+            <div class="trial-details">
+              <p>${trial.description}</p>
+              <p>${trial.location}</p>
+              <p class="trial-distance">${distanceInMiles} miles away</p>
+            </div>
+          </div>
+        `;
+        trialsList.innerHTML += trialCard;
+      });
+    }
+
+    // Clean up resources
+    window.addEventListener('beforeunload', () => {
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+      // Clear animation frames if needed
+      pulsatingCircles.forEach(circle => {
+        if (circle.animationFrame) {
+          cancelAnimationFrame(circle.animationFrame);
+        }
+      });
+    });
+
+    // Initialize map when the page loads
+    window.onload = initMap;
+
+    // Filter button functionality
+    document.querySelectorAll('.filter-button').forEach(button => {
+      button.addEventListener('click', function() {
+        document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        // Add filter logic here
+      });
+    });
+
+    // Search functionality
+    document.querySelector('.search-input').addEventListener('input', function(e) {
+      // Add search logic here
+      console.log('Searching for:', e.target.value);
+    });
+  </script>
+</body>
+</html> 
